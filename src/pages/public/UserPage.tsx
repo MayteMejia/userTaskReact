@@ -3,16 +3,19 @@ import {
   Button,
   CircularProgress,
   Container,
+  IconButton,
+  InputAdornment,
   Paper,
   TextField,
   Typography,
 } from '@mui/material';
 import type { ActionState } from '../../interfaces';
 import { schemaUser, type UserFormValues } from '../../models';
-import { createInitialState, hanleZodError } from '../../helpers';
+import { createInitialState, handleZodError } from '../../helpers';
 import { useAlert, useAxios } from '../../hooks';
 import { Link, useNavigate } from 'react-router-dom';
-import { useActionState } from 'react';
+import React, { useActionState } from 'react';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 
 type UserActionState = ActionState<UserFormValues>;
 const initialState = createInitialState<UserFormValues>();
@@ -39,7 +42,7 @@ export const UserPage = () => {
       showAlert('Usuario creado', 'success');
       navigate('/login');
     } catch (error) {
-      const err = hanleZodError<UserFormValues>(error, rawData);
+      const err = handleZodError<UserFormValues>(error, rawData);
       showAlert(err.message, 'error');
       return err;
     }
@@ -49,6 +52,15 @@ export const UserPage = () => {
     createUserApi,
     initialState
   );
+
+  const [showPassword, setShowPassword] = React.useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
+
+  const handleClickShowPassword = (
+    setter: React.Dispatch<React.SetStateAction<boolean>>
+  ) => {
+    setter((show) => !show);
+  }
 
   return (
     <Container
@@ -100,11 +112,23 @@ export const UserPage = () => {
               required
               fullWidth
               label="Password"
-              type="password"
+              type={showPassword ? 'text' : 'password'}
               disabled={isPending}
               defaultValue={state?.formData?.password}
               error={!!state?.errors?.password}
               helperText={state?.errors?.password}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={() => handleClickShowPassword(setShowPassword)}
+                      edge="end"
+                    >
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
             />
             <TextField
               name="confirmPassword"
@@ -112,11 +136,23 @@ export const UserPage = () => {
               required
               fullWidth
               label="Repetir password"
-              type="password"
+              type={showConfirmPassword ? 'text' : 'password'}
               disabled={isPending}
               defaultValue={state?.formData?.confirmPassword}
               error={!!state?.errors?.confirmPassword}
               helperText={state?.errors?.confirmPassword}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={() => handleClickShowPassword(setShowConfirmPassword)}
+                      edge="end"
+                    >
+                      {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
             />
             <Button
               type="submit"

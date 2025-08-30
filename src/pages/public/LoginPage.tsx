@@ -4,20 +4,22 @@ import {
   Button,
   CircularProgress,
   Container,
+  IconButton,
+  InputAdornment,
   Paper,
   TextField,
   Typography,
 } from '@mui/material';
-import { useActionState } from 'react';
+import React, { useActionState } from 'react';
 import { shemaLogin, type LoginFormValues } from '../../models';
 import type { ActionState } from '../../interfaces';
-import { createInitialState, hanleZodError } from '../../helpers';
+import { createInitialState, handleZodError } from '../../helpers';
 import { useAlert, useAuth, useAxios } from '../../hooks';
 import { Link, useNavigate } from 'react-router-dom';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 
 export type LoginActionState = ActionState<LoginFormValues>;
 const initialState = createInitialState<LoginFormValues>();
-//const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export const LoginPage = () => {
   const axios = useAxios();
@@ -35,13 +37,12 @@ export const LoginPage = () => {
     };
     try {
       shemaLogin.parse(rawData);
-      //await delay(3000);
       const response = await axios.post('/login', rawData);
       if (!response?.data?.token) throw new Error('No existe el token');
       login(response.data.token, { username: rawData.username });
       navigate('/perfil');
     } catch (error) {
-      const err = hanleZodError<LoginFormValues>(error, rawData);
+      const err = handleZodError<LoginFormValues>(error, rawData);
       console.log('err', err);
       showAlert(err.message, 'error');
       return err;
@@ -52,6 +53,10 @@ export const LoginPage = () => {
     loginApi,
     initialState
   );
+
+  const [showPassword, setShowPassword] = React.useState(false);
+
+  const handleClickShowPassword = () => setShowPassword((show) => !show);
 
   return (
     <Container
@@ -108,11 +113,23 @@ export const LoginPage = () => {
               required
               fullWidth
               label="Password"
-              type="password"
+              type={showPassword ? 'text' : 'password'}
               disabled={isPending}
               defaultValue={state?.formData?.password}
               error={!!state?.errors?.password}
               helperText={state?.errors?.password}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={handleClickShowPassword}
+                      edge="end"
+                    >
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
             />
             <Button
               type="submit"

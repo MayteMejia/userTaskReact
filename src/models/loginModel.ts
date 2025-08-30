@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 export const shemaLogin = z.object({
-  username: z.string().min(3, 'El nombre el obligarotio'),
+  username: z.string().min(3, 'El nombre el obligatorio'),
   password: z.string().min(6, 'La contraseña es obligatoria'),
 });
 

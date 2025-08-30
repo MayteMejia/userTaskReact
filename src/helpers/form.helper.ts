@@ -9,7 +9,7 @@ export const createInitialState = <T>(): ActionState<T> => {
   };
 };
 
-export const hanleZodError = <T>(error: unknown, rawData: Partial<T>): ActionState<T> => {
+export const handleZodError = <T>(error: unknown, rawData: Partial<T>): ActionState<T> => {
   if (error instanceof z.ZodError) {
     const fieldErros: Partial<Record<keyof T, string>> = {};
     error.issues.forEach((issue) => {
@@ -18,7 +18,7 @@ export const hanleZodError = <T>(error: unknown, rawData: Partial<T>): ActionSta
     });
     return {
       errors: fieldErros,
-      message: 'Por favor corrige los errores en el formulaario',
+      message: 'Por favor corrige los errores en el formulario',
       formData: rawData,
     };
   }

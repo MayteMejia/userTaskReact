@@ -23,6 +23,7 @@ export const Layout = ({ children }: Props) => {
   const menuOptions: MenuType[] = [
     { text: 'Mi Perfil', icon: <PersonIcon />, path: '/perfil' },
     { text: 'Mis Tareas', icon: <TaskIcon />, path: '/tasks' },
+    { text: 'Usuarios', icon: <PersonIcon />, path: '/users' },
   ];
 
   return (
